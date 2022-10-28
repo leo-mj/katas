@@ -1,4 +1,4 @@
-import { interpretStep, simpleAssembler } from "./simpleAssembler";
+import { executeInstructions, interpretStep, simpleAssembler } from "./simpleAssembler";
 
 test.skip("simpleAssembler returns correct register", () => {
     expect(simpleAssembler(['mov a 5', 'inc a', 'dec a', 'dec a', 'jnz a -1', 'inc a'])).toStrictEqual({'a': 1});
@@ -9,4 +9,12 @@ test("interpretStep returns the correct object including command, registerKey an
     expect(interpretStep('mov a 5')).toStrictEqual({command: "mov", registerKey: "a", value: "5"});
     expect(interpretStep('jnz a -1')).toStrictEqual({command: "jnz", registerKey: "a", value: "-1"});
     expect(interpretStep('inc a')).toStrictEqual({command: "inc", registerKey: "a", value: "1"});
+})
+
+test("executeInstructions returns the correct dictionary object", () => {
+    expect(executeInstructions([{command: 'mov', registerKey: 'a', value: '5'}])).toStrictEqual({'a': 1});
+    expect(executeInstructions([
+        {command: 'mov', registerKey: 'a', value: '2'}, {command: 'dec', registerKey: 'a', value: '-1'}, {command: 'jnz', registerKey: 'a', value: '-1'}
+    ])).toStrictEqual({'a': 1});
+
 })

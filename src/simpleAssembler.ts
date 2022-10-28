@@ -17,7 +17,7 @@ Example: simpleAssembler(['mov a 5','inc a','dec a','dec a','jnz a -1', 'inc a']
  */
 export function simpleAssembler(program: string[]): Dictionary {
     const instructions: Instruction[] = program.map(interpretStep);
-    const registers: Dictionary = {};
+    const registers: Dictionary = executeInstructions(instructions);
     return registers;
 }
 
@@ -32,6 +32,23 @@ export function interpretStep(step: string): Instruction {
     }
     return { command: command, registerKey: registerKey, value: value };
 }
+
+export function executeInstructions(instructions: Instruction[]): Dictionary {
+    const registers: Dictionary = {};
+    for (let i = 0; i < instructions.length; i++) {
+      const instruction: Instruction = instructions[i];
+      const { command, registerKey, value } = instruction;
+      const valueNum: number = value.toUpperCase() === value.toLowerCase() ? parseInt(value) : registers[value];
+      if (command === "mov") {
+        registers[registerKey] = valueNum;
+      } else if (command === "jnz" && registers[registerKey] !== 0) {
+        i += valueNum - 1;
+      } else if (command === "inc" || command === "dec") {
+        registers[registerKey] += valueNum;
+      }
+    }
+    return registers;
+  }
 
 interface Dictionary {
     [letter: string]: number,
