@@ -38,17 +38,29 @@ export function executeInstructions(instructions: Instruction[]): Dictionary {
     for (let i = 0; i < instructions.length; i++) {
       const instruction: Instruction = instructions[i];
       const { command, registerKey, value } = instruction;
-      const valueNum: number = value.toUpperCase() === value.toLowerCase() ? parseInt(value) : registers[value];
+
+      const valueAsNum: number = transformValueToNumber(value, registers);
+
       if (command === "mov") {
-        registers[registerKey] = valueNum;
+        registers[registerKey] = valueAsNum;
       } else if (command === "jnz" && registers[registerKey] !== 0) {
-        i += valueNum - 1;
+        i += valueAsNum - 1;
       } else if (command === "inc" || command === "dec") {
-        registers[registerKey] += valueNum;
+        registers[registerKey] += valueAsNum;
       }
     }
     return registers;
-  }
+}
+
+export function transformValueToNumber(value: string, registers: Dictionary): number {
+    if (value.toUpperCase() === value.toLowerCase()) { // number characters are identical in upper and lower case
+        const valueAsNum: number = parseInt(value);
+        return valueAsNum;
+    }
+    const valueAsNum: number = registers[value];
+    return valueAsNum;
+}
+
 
 interface Dictionary {
     [letter: string]: number,
