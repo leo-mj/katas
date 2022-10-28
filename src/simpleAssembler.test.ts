@@ -12,9 +12,12 @@ test("interpretStep returns the correct object including command, registerKey an
 })
 
 test("executeInstructions returns the correct dictionary object", () => {
-    expect(executeInstructions([{command: 'mov', registerKey: 'a', value: '5'}])).toStrictEqual({'a': 1});
+    expect(executeInstructions([{command: 'mov', registerKey: 'a', value: '5'}])).toStrictEqual({'a': 5});
     expect(executeInstructions([
         {command: 'mov', registerKey: 'a', value: '2'}, {command: 'dec', registerKey: 'a', value: '-1'}, {command: 'jnz', registerKey: 'a', value: '-1'}
-    ])).toStrictEqual({'a': 1});
+    ])).toStrictEqual({'a': 0});
+    expect(executeInstructions([
+        {command: 'mov', registerKey: 'a', value: '2'}, {command: 'mov', registerKey: 'b', value: 'a'}
+    ])).toStrictEqual({'a': 2, 'b': 2});
 
 })
