@@ -9,25 +9,25 @@ If the digits can't be rearranged to form a bigger number, return -1
  */
 
 export function nextBigger(n: number): number {
-  const nextBiggerNumberOrN: number = nextBiggerOrInfinity(n);
-  if (nextBiggerNumberOrN === n || nextBiggerNumberOrN === Infinity) {
-    return -1;
+  const nextBiggerNumberOrNull: string | null = nextBiggerOrNull(n.toString());
+  if (nextBiggerNumberOrNull && parseInt(nextBiggerNumberOrNull) > n) {
+    return parseInt(nextBiggerNumberOrNull);
   }
-  return nextBiggerNumberOrN;
+  return -1;
 }
 
-export function nextBiggerOrInfinity(n: number): number {
-  let nextBigger = Infinity;
-  const nDigits: string = n.toString();
+export function nextBiggerOrNull(nDigits: string): string | null {
+  const n = parseInt(nDigits);
+  let nextBigger: string | null = null;
 
   if (nDigits.length === 1) {
     // base condition
-    return n;
+    return nDigits;
   }
 
   for (let i = 0; i < nDigits.length; i++) {
     const currentDigit = nDigits[i];
-    let nextBiggerGivenCurrentDigit: number = n;
+    let nextBiggerGivenCurrentDigit: string = nDigits;
     const nWithoutCurrentDigit = nDigits.slice(0, i) + nDigits.slice(i + 1);
 
     if (parseInt(currentDigit) > parseInt(nDigits[0])) {
@@ -36,15 +36,14 @@ export function nextBiggerOrInfinity(n: number): number {
         nWithoutCurrentDigit,
       );
     } else if (currentDigit === nDigits[0]) {
-      nextBiggerGivenCurrentDigit = nextBiggerStartingWithFirstDigitOfN(
-        n,
-        nDigits,
-      );
+      nextBiggerGivenCurrentDigit =
+        nextBiggerStartingWithFirstDigitOfN(nDigits);
     }
 
     if (
-      nextBiggerGivenCurrentDigit > n &&
-      nextBiggerGivenCurrentDigit < nextBigger
+      parseInt(nextBiggerGivenCurrentDigit) > n &&
+      (nextBigger === null ||
+        parseInt(nextBiggerGivenCurrentDigit) < parseInt(nextBigger))
     ) {
       nextBigger = nextBiggerGivenCurrentDigit;
     }
@@ -55,24 +54,20 @@ export function nextBiggerOrInfinity(n: number): number {
 export function smallestStartingWithCurrentDigit(
   currentDigit: string,
   nWithoutCurrentDigit: string,
-): number {
+): string {
   const smallestArrangementOfNRemainder = nWithoutCurrentDigit
     .split("")
     .sort()
     .join("");
-  const nextBiggerGivenCurrentDigit = parseInt(
-    currentDigit + smallestArrangementOfNRemainder,
-  );
-  return nextBiggerGivenCurrentDigit;
+  return currentDigit + smallestArrangementOfNRemainder;
 }
 
-export function nextBiggerStartingWithFirstDigitOfN(
-  n: number,
-  nDigits: string,
-): number {
+export function nextBiggerStartingWithFirstDigitOfN(nDigits: string): string {
   const nRemainderStr = nDigits.slice(1);
-  const nRemainder = parseInt(nRemainderStr);
-  const nextBiggerRemaining: number = nextBiggerOrInfinity(nRemainder);
-  const nextBiggerStartingWithFirstDigit = n - nRemainder + nextBiggerRemaining;
+  const nextBiggerRemaining: string | null = nextBiggerOrNull(nRemainderStr);
+  if (nextBiggerRemaining === null) {
+    return nDigits;
+  }
+  const nextBiggerStartingWithFirstDigit = nDigits[0] + nextBiggerRemaining;
   return nextBiggerStartingWithFirstDigit;
 }
