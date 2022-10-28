@@ -1,5 +1,6 @@
-# TypeScript Kata Template
+# TypeScript Katas
 
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-nd/4.0/88x31.png" /></a>
+<p>These are solutions to problems that I wrote in TypeScript.</p>
 
-> This is part of Academy's technical curriculum for **The Mark**. All parts of that curriculum, including this project, are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License</a>
+<p>To check whether tests pass, install dependencies via `yarn`</p>
+<p>Then run tests via `yarn test`</p>
