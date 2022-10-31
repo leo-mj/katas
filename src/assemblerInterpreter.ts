@@ -9,6 +9,6 @@ import { parseProgram } from "./assemblerUtils/parseProgram";
 export function assemblerInterpreter(program: string): string | -1 {
   const programLines: Instruction[] = parseProgram(program);
   const dictionary: Dictionary = {};
-  const returnValue: ReturnValue = executeAllLines(programLines, dictionary);
+  const returnValue: string | -1 = executeAllLines(programLines, dictionary);
   return returnValue;
 }

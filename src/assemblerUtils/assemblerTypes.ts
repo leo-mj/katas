@@ -7,6 +7,7 @@ export interface Dictionary {
 export type Instruction =
   | RegisterOperation
   | { command: "label"; labelName: string }
+  | Cmp
   | LabelJump
   | FunctionCall
   | { command: "comment" };
@@ -25,6 +26,12 @@ export type RegisterOperation = {
   regOrVal: Integer | RegisterKey;
 };
 
+export interface Cmp {
+  command: "cmp";
+  regOrVal1: string | Integer;
+  regOrVal2: string | Integer;
+}
+
 export type LabelJumpCommand =
   | "jmp"
   | "jne"
@@ -33,13 +40,10 @@ export type LabelJumpCommand =
   | "jg"
   | "jle"
   | "jl";
-export type LabelJump =
-  | { command: LabelJumpCommand; labelName: string }
-  | {
-      command: "cmp";
-      regOrVal1: Integer | RegisterKey;
-      regOrVal2: Integer | RegisterKey;
-    };
+export interface LabelJump {
+  command: LabelJumpCommand;
+  labelName: string;
+}
 
 export type FunctionCallCommand = "call" | "ret" | "msg" | "end";
 export type FunctionCall =
@@ -47,8 +51,8 @@ export type FunctionCall =
   | { command: "call"; labelName: string }
   | { command: "msg"; message: string };
 
-export type ReturnValue = -1 | string;
+export type ReturnValue = number | string;
 export interface ExecutionReturns {
   nextLine: number;
-  returnValue: string | -1;
+  returnValue: ReturnValue;
 }

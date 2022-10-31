@@ -1,4 +1,5 @@
 import {
+  Cmp,
   Dictionary,
   ExecutionReturns,
   Instruction,
@@ -11,7 +12,7 @@ import {
 export function executeAllLines(
   programLines: Instruction[],
   dictionary: Dictionary,
-): ReturnValue {
+): string | -1 {
   let linePointer = 0;
   let previousValue: ReturnValue = -1;
 
@@ -31,7 +32,10 @@ export function executeAllLines(
     linePointer = nextLine;
   }
 
-  if (programLines[linePointer].command === "end") {
+  if (
+    programLines[linePointer].command === "end" &&
+    typeof previousValue === "string"
+  ) {
     return previousValue;
   }
 
@@ -47,9 +51,12 @@ export function executeLine(
   const currentLine: Instruction = programLines[linePointer];
   const defaultReturns: ExecutionReturns = {
     nextLine: linePointer + 1,
-    returnValue: -1,
+    returnValue: previousValue,
   };
   switch (currentLine.command) {
+    case "comment":
+    case "label":
+      return defaultReturns;
     case "mov":
     case "inc":
     case "dec":
@@ -60,8 +67,8 @@ export function executeLine(
       executeRegisterOperation(currentLine, dictionary);
       return defaultReturns;
     case "cmp":
-      const returnValue: ReturnValue = executeCmp(currentLine, dictionary);
-      return { nextLine: linePointer + 1, returnValue };
+      const cmpValue: ReturnValue = executeCmp(currentLine, dictionary);
+      return { nextLine: linePointer + 1, returnValue: cmpValue };
     case "jmp":
     case "jne":
     case "je":
@@ -69,18 +76,84 @@ export function executeLine(
     case "jg":
     case "jle":
     case "jl":
-      executeLabelJump(currentLine, dictionary);
+      const labelJumpValue: ExecutionReturns = executeLabelJump(
+        linePointer,
+        currentLine,
+        programLines,
+        previousValue,
+      );
+      return labelJumpValue;
   }
 
   return defaultReturns;
 }
 
+export function executeLabelJump(
+  linePointer: number,
+  currentLine: LabelJump,
+  programLines: Instruction[],
+  previousValue: ReturnValue,
+): ExecutionReturns {
+  const { command, labelName } = currentLine;
+  const defaultReturns: ExecutionReturns = {
+    nextLine: linePointer + 1,
+    returnValue: previousValue,
+  };
+  const labelIndex: number = findLabelIndex(labelName, programLines) + 1;
+  switch (command) {
+    case "jmp":
+      return { nextLine: labelIndex, returnValue: previousValue };
+    case "jne":
+      if (previousValue !== "equal") {
+        return { nextLine: labelIndex, returnValue: previousValue };
+      }
+      break;
+    case "je":
+      if (previousValue === "equal") {
+        return { nextLine: labelIndex, returnValue: previousValue };
+      }
+      break;
+    case "jge":
+      if (previousValue === "equal" || previousValue === "greater") {
+        return { nextLine: labelIndex, returnValue: previousValue };
+      }
+      break;
+    case "jg":
+      if (previousValue === "greater") {
+        return { nextLine: labelIndex, returnValue: previousValue };
+      }
+      break;
+    case "jle":
+      if (previousValue === "equal" || previousValue === "less") {
+        return { nextLine: labelIndex, returnValue: previousValue };
+      }
+      break;
+    case "jl":
+      if (previousValue === "less") {
+        return { nextLine: labelIndex, returnValue: previousValue };
+      }
+      break;
+    default:
+      throw new Error(`Unknown label: ${labelName}, or command: ${command}`);
+  }
+  return defaultReturns;
+}
+
+export function findLabelIndex(
+  labelName: string,
+  programLines: Instruction[],
+): number {
+  for (let i = 0; i < programLines.length; i++) {
+    const { command } = programLines[i];
+    if (command === labelName) {
+      return i;
+    }
+  }
+  throw new Error("Unknown label: " + labelName);
+}
+
 export function executeCmp(
-  currentLine: {
-    command: "cmp";
-    regOrVal1: string | Integer;
-    regOrVal2: string | Integer;
-  },
+  currentLine: Cmp,
   dictionary: Dictionary,
 ): ReturnValue {
   const { regOrVal1, regOrVal2 } = currentLine;
@@ -100,6 +173,9 @@ export function executeCmp(
   if (val1 < val2) {
     return "less";
   }
+  throw new Error(
+    "Unknown registers or values: " + regOrVal1 + " and " + regOrVal2,
+  );
 }
 
 export function executeRegisterOperation(

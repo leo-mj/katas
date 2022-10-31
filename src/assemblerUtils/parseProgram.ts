@@ -8,6 +8,7 @@ import {
   Integer,
   LabelJumpCommand,
   FunctionCallCommand,
+  Cmp,
 } from "./assemblerTypes";
 
 export function parseProgram(program: string): Instruction[] {
@@ -52,8 +53,10 @@ export function parseCommand(splitLine: string[]): Instruction {
         args,
       );
       return registerOperation;
-    case "jmp":
     case "cmp":
+      const cmp: Cmp = parseCmp(args);
+      return cmp;
+    case "jmp":
     case "jne":
     case "je":
     case "jge":
@@ -89,18 +92,16 @@ function parseRegisterOperation(
   return { command, targetReg, regOrVal };
 }
 
-function parseLabelJump(
-  command: LabelJumpCommand | "cmp",
-  args: string[],
-): LabelJump {
-  if (command === "cmp") {
-    const [regOrVal1, regOrVal2]: string[] = args;
-    return {
-      command,
-      regOrVal1: regOrVal1.substring(0, regOrVal1.length - 1),
-      regOrVal2,
-    }; // to get rid of the comma
-  }
+function parseCmp(args: string[]): Cmp {
+  const [regOrVal1, regOrVal2]: string[] = args;
+  return {
+    command: "cmp",
+    regOrVal1: regOrVal1.substring(0, regOrVal1.length - 1),
+    regOrVal2,
+  };
+}
+
+function parseLabelJump(command: LabelJumpCommand, args: string[]): LabelJump {
   const labelName: string = args[0];
   return { command, labelName };
 }
