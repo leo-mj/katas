@@ -47,7 +47,7 @@ export type FunctionCall =
   | { command: "call"; labelName: string }
   | { command: "msg"; message: string };
 
-export type returnValue = -1 | string;
+export type ReturnValue = -1 | string;
 export interface ExecutionReturns {
   nextLine: number;
   returnValue: string | -1;
