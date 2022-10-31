@@ -4,6 +4,10 @@ export interface Dictionary {
   [key: RegisterKey]: Integer;
 }
 
+export interface Program {
+  [lineCount: number]: Instruction|Program
+}
+
 export type Instruction =
   | RegisterOperation
   | { command: "label"; labelName: string }
@@ -34,3 +38,10 @@ export type FunctionCall =
   | { command: "ret" | "end" }
   | { command: "call"; labelName: string }
   | { command: "msg"; message: string };
+
+
+export type returnValue = -1 | string
+export interface ExecutionReturns {
+  nextLine: number,
+  returnValue: string
+}
