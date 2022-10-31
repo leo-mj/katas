@@ -1,6 +1,6 @@
-import { Instruction, RegisterOperation, LabelJump, FunctionCall, ComplexRegisterCommand, RegisterKey, Integer, LabelJumpCommand, FunctionCallCommand } from "./assemblerTypes";
+import { Instruction, RegisterOperation, LabelJump, FunctionCall, RegisterCommand, RegisterKey, Integer, LabelJumpCommand, FunctionCallCommand } from "./assemblerTypes";
 
-export function parseProgram(program: string): Instruction[] {
+export function parseProgram(program: string): Instruction[]{
     const rawLines: string[] = program.split("\n");
     const linesAsInstructions: Instruction[] = rawLines.map(parseLine);
     return linesAsInstructions;
@@ -64,16 +64,16 @@ export function parseProgram(program: string): Instruction[] {
   }
   
   function parseRegisterOperation(
-    command: ComplexRegisterCommand | "inc" | "dec",
+    command: RegisterCommand,
     args: string[],
   ): RegisterOperation {
     const targetReg: RegisterKey = args[0].substring(0, args[0].length - 1); // to get rid of the comma
-  
-    if (command === "inc" || command === "dec") {
-      return { command, targetReg };
-    }
     let regOrVal: Integer | RegisterKey = args[1];
-    if (regOrVal.toUpperCase() === regOrVal.toLowerCase()) {
+    if (command === "inc") {
+      regOrVal = 1;
+    } else if (command === "dec") {
+      regOrVal = -1;
+    } else if (regOrVal.toUpperCase() === regOrVal.toLowerCase()) {
       regOrVal = parseInt(regOrVal);
     }
     return { command, targetReg, regOrVal };

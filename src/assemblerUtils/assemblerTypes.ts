@@ -4,10 +4,6 @@ export interface Dictionary {
   [key: RegisterKey]: Integer;
 }
 
-export interface Program {
-  [lineCount: number]: Instruction|Program
-}
-
 export type Instruction =
   | RegisterOperation
   | { command: "label"; labelName: string }
@@ -15,14 +11,14 @@ export type Instruction =
   | FunctionCall
   | { command: "comment" };
 
-export type ComplexRegisterCommand = "mov" | "add" | "sub" | "mul" | "div";
+export type RegisterCommand = "mov" | "add" | "sub" | "mul" | "div"|"inc"|"dec";
 export type RegisterOperation =
-  | {
-      command: ComplexRegisterCommand;
+  {
+      command: RegisterCommand;
       targetReg: RegisterKey;
       regOrVal: Integer | RegisterKey;
     }
-  | { command: "inc" | "dec"; targetReg: RegisterKey };
+;
 
 export type LabelJumpCommand = "jmp" | "jne" | "je" | "jge" | "jg" | "jle" | "jl";
 export type LabelJump =
@@ -43,5 +39,5 @@ export type FunctionCall =
 export type returnValue = -1 | string
 export interface ExecutionReturns {
   nextLine: number,
-  returnValue: string
+  returnValue: string|-1
 }
