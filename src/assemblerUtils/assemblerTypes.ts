@@ -11,16 +11,28 @@ export type Instruction =
   | FunctionCall
   | { command: "comment" };
 
-export type RegisterCommand = "mov" | "add" | "sub" | "mul" | "div"|"inc"|"dec";
-export type RegisterOperation =
-  {
-      command: RegisterCommand;
-      targetReg: RegisterKey;
-      regOrVal: Integer | RegisterKey;
-    }
-;
+export type RegisterCommand =
+  | "mov"
+  | "add"
+  | "sub"
+  | "mul"
+  | "div"
+  | "inc"
+  | "dec";
+export type RegisterOperation = {
+  command: RegisterCommand;
+  targetReg: RegisterKey;
+  regOrVal: Integer | RegisterKey;
+};
 
-export type LabelJumpCommand = "jmp" | "jne" | "je" | "jge" | "jg" | "jle" | "jl";
+export type LabelJumpCommand =
+  | "jmp"
+  | "jne"
+  | "je"
+  | "jge"
+  | "jg"
+  | "jle"
+  | "jl";
 export type LabelJump =
   | { command: LabelJumpCommand; labelName: string }
   | {
@@ -35,9 +47,8 @@ export type FunctionCall =
   | { command: "call"; labelName: string }
   | { command: "msg"; message: string };
 
-
-export type returnValue = -1 | string
+export type returnValue = -1 | string;
 export interface ExecutionReturns {
-  nextLine: number,
-  returnValue: string|-1
+  nextLine: number;
+  returnValue: string | -1;
 }

@@ -29,4 +29,3 @@ print:
 
   expect(assemblerInterpreter(program_fail)).toBe(-1);
 });
-
