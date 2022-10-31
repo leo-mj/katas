@@ -23,13 +23,13 @@ export function simpleAssembler(program: string[]): Dictionary {
 
 export function interpretStep(step: string): Instruction {
   const splitStep: string[] = step.split(" ");
-  const [command, registerKey]: string[] = splitStep.slice(0, 2)
+  const [command, registerKey]: string[] = splitStep.slice(0, 2);
   let value = splitStep[2] || "";
   if (command === "inc") {
     value = "1";
   } else if (command === "dec") {
     value = "-1";
-  } 
+  }
   return { command: command, registerKey: registerKey, value: value };
 }
 
@@ -43,7 +43,11 @@ export function executeInstructions(instructions: Instruction[]): Dictionary {
 
     if (command === "mov") {
       registers[registerKey] = valueAsNum;
-    } else if (command === "jnz" && registers[registerKey] !== 0 && registerKey !== "0") {
+    } else if (
+      command === "jnz" &&
+      registers[registerKey] !== 0 &&
+      registerKey !== "0"
+    ) {
       i += valueAsNum - 1;
     } else if (command === "inc" || command === "dec") {
       registers[registerKey] += valueAsNum;
