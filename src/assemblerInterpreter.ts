@@ -122,7 +122,7 @@ function parseFunctionCall(
   return { command, message: args.join(" ") };
 }
 
-type Integer = Integer;
+type Integer = number;
 type RegisterKey = string;
 interface Dictionary {
   [key: RegisterKey]: Integer;
