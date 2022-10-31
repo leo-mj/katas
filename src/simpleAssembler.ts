@@ -43,7 +43,7 @@ export function executeInstructions(instructions: Instruction[]): Dictionary {
 
     if (command === "mov") {
       registers[registerKey] = valueAsNum;
-    } else if (command === "jnz" && registers[registerKey] !== 0) {
+    } else if (command === "jnz" && registers[registerKey] !== 0 && registerKey !== "0") {
       i += valueAsNum - 1;
     } else if (command === "inc" || command === "dec") {
       registers[registerKey] += valueAsNum;
