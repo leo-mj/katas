@@ -22,14 +22,14 @@ export function simpleAssembler(program: string[]): Dictionary {
 }
 
 export function interpretStep(step: string): Instruction {
-  const command: string = step.substring(0, 3);
-  const registerKey: string = step[4];
-  let value: string = step.substring(6);
+  const splitStep: string[] = step.split(" ");
+  const [command, registerKey]: string[] = splitStep.slice(0, 2)
+  let value = splitStep[2] || "";
   if (command === "inc") {
     value = "1";
   } else if (command === "dec") {
     value = "-1";
-  }
+  } 
   return { command: command, registerKey: registerKey, value: value };
 }
 
