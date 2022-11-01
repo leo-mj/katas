@@ -1,6 +1,6 @@
 import { assemblerInterpreter } from "./assemblerInterpreter";
 
-test.skip("assemblerInterpreter returns the correct registers", () => {
+test("assemblerInterpreter returns the correct registers", () => {
   const testInput1 = `; My first program
 mov  a, 5
 inc  a

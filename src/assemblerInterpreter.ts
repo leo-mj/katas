@@ -1,9 +1,5 @@
-import {
-  Instruction,
-  Dictionary,
-  ReturnValue,
-} from "./assemblerUtils/assemblerTypes";
-import { executeAllLines, executeLine } from "./assemblerUtils/executeLine";
+import { Instruction, Dictionary } from "./assemblerUtils/assemblerTypes";
+import { executeAllLines } from "./assemblerUtils/executeLine";
 import { parseProgram } from "./assemblerUtils/parseProgram";
 
 export function assemblerInterpreter(program: string): string | -1 {

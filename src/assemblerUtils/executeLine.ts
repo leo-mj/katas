@@ -7,7 +7,6 @@ import {
   Integer,
   LabelJump,
   RegisterOperation,
-  ReturnValue,
 } from "./assemblerTypes";
 
 export function executeAllLines(
@@ -21,21 +20,23 @@ export function executeAllLines(
     linesToReturnTo: [],
     dictionary,
   };
-  const { linePointer, nextLine, returnValue } = executionContext;
 
   while (
-    linePointer < programLines.length &&
-    programLines[linePointer].command !== "end"
+    executionContext.linePointer < programLines.length &&
+    programLines[executionContext.linePointer].command !== "end"
   ) {
+    console.log(
+      programLines[executionContext.linePointer],
+      executionContext.returnValue,
+    );
     executeLine(executionContext, programLines);
-    executionContext.linePointer = nextLine;
+    executionContext.linePointer = executionContext.nextLine;
   }
-
   if (
-    programLines[linePointer].command === "end" &&
-    typeof returnValue === "string"
+    programLines[executionContext.linePointer].command === "end" &&
+    typeof executionContext.returnValue === "string"
   ) {
-    return returnValue;
+    return executionContext.returnValue;
   }
 
   return -1;
@@ -98,7 +99,10 @@ export function executeMsg(
   }
   const { message } = currentLine;
   const splitMessage: string[] = message.split(", ");
-  const translatedMessage: string = translateMessage(splitMessage, executionContext.dictionary);
+  const translatedMessage: string = translateMessage(
+    splitMessage,
+    executionContext.dictionary,
+  );
   executionContext.returnValue = translatedMessage;
   return;
 }
@@ -122,17 +126,19 @@ export function translateMessage(
 }
 
 export function executeRet(executionContext: ExecutionContext): void {
-  let {linesToReturnTo, nextLine} = executionContext;
   if (executionContext.linesToReturnTo.length < 1) {
     throw new Error("No line to return to");
   }
-  executionContext.nextLine = executionContext.linesToReturnTo[executionContext.linesToReturnTo.length - 1];
+  executionContext.nextLine =
+    executionContext.linesToReturnTo[
+      executionContext.linesToReturnTo.length - 1
+    ];
   executionContext.linesToReturnTo.pop();
   return;
 }
 
 export function executeCall(
- executionContext: ExecutionContext,
+  executionContext: ExecutionContext,
   currentLine: FunctionCall,
   programLines: Instruction[],
 ): void {
@@ -170,7 +176,10 @@ export function executeLabelJump(
         return;
       }
     case "jge":
-      if (executionContext.returnValue === "equal" || executionContext.returnValue === "greater") {
+      if (
+        executionContext.returnValue === "equal" ||
+        executionContext.returnValue === "greater"
+      ) {
         executionContext.nextLine = labelIndex + 1;
         return;
       }
@@ -180,7 +189,10 @@ export function executeLabelJump(
         return;
       }
     case "jle":
-      if (executionContext.returnValue === "equal" || executionContext.returnValue === "less") {
+      if (
+        executionContext.returnValue === "equal" ||
+        executionContext.returnValue === "less"
+      ) {
         executionContext.nextLine = labelIndex + 1;
         return;
       }
@@ -200,7 +212,10 @@ export function findLabelIndex(
 ): number {
   for (let i = 0; i < programLines.length; i++) {
     const currentLine = programLines[i];
-    if (currentLine.command === "label" && currentLine.labelName === labelName) {
+    if (
+      currentLine.command === "label" &&
+      currentLine.labelName === labelName
+    ) {
       return i;
     }
   }
