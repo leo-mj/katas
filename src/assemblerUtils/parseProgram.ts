@@ -111,7 +111,7 @@ function parseCmp(argsRaw: string[]): Cmp {
   }
   let regOrVal2: string | Integer = args[1];
   if (regOrVal2.toUpperCase() === regOrVal2.toLowerCase()) {
-    regOrVal1 = parseInt(regOrVal2);
+    regOrVal2 = parseInt(regOrVal2);
   }
 
   return {
