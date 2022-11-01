@@ -1,10 +1,14 @@
-import { Instruction, Dictionary } from "./assemblerUtils/assemblerTypes";
+import {
+  Instruction,
+  Dictionary,
+  ReturnValue,
+} from "./assemblerUtils/assemblerTypes";
 import { executeAllLines } from "./assemblerUtils/executeLine";
 import { parseProgram } from "./assemblerUtils/parseProgram";
 
-export function assemblerInterpreter(program: string): string | -1 {
+export function assemblerInterpreter(program: string): ReturnValue {
   const programLines: Instruction[] = parseProgram(program);
   const dictionary: Dictionary = {};
-  const returnValue: string | -1 = executeAllLines(programLines, dictionary);
+  const returnValue: ReturnValue = executeAllLines(programLines, dictionary);
   return returnValue;
 }

@@ -8,12 +8,13 @@ import {
   LabelJump,
   RegisterKey,
   RegisterOperation,
+  ReturnValue,
 } from "./assemblerTypes";
 
 export function executeAllLines(
   programLines: Instruction[],
   dictionary: Dictionary,
-): string | -1 {
+): ReturnValue {
   const executionContext: ExecutionContext = {
     linePointer: 0,
     nextLine: 1,
@@ -22,25 +23,19 @@ export function executeAllLines(
     dictionary,
   };
 
-  while (
-    executionContext.linePointer < programLines.length &&
-    programLines[executionContext.linePointer].command !== "end"
-  ) {
+  while (programLines[executionContext.linePointer].command !== "end") {
     console.log(
       programLines[executionContext.linePointer],
       executionContext.returnValue,
     );
     executeLine(executionContext, programLines);
     executionContext.linePointer = executionContext.nextLine;
-  }
-  if (
-    programLines[executionContext.linePointer].command === "end" &&
-    typeof executionContext.returnValue === "string"
-  ) {
-    return executionContext.returnValue;
+    if (executionContext.linePointer >= programLines.length) {
+      return -1;
+    }
   }
 
-  return -1;
+  return executionContext.returnValue;
 }
 
 export function executeLine(
