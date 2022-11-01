@@ -13,23 +13,30 @@ import {
 
 export function parseProgram(program: string): Instruction[] {
   const rawLines: string[] = program.split("\n");
-  const linesAsInstructions: Instruction[] = rawLines.map(parseLine);
+  const linesAsInstructions: Instruction[] = [];
+  for (const line of rawLines) {
+    const instruction: Instruction|undefined = parseLine(line);
+    if (instruction !== undefined) {
+      linesAsInstructions.push(instruction);
+    }
+  }
   return linesAsInstructions;
 }
 
-export function parseLine(lineStr: string): Instruction {
+export function parseLine(lineStr: string): Instruction | undefined {
   const lineStrWithoutComments: string = lineStr.split(";")[0];
   if (lineStrWithoutComments === "") {
-    return { command: "comment" };
+    return undefined;
   }
-  if (lineStrWithoutComments.substring(-1) === ":") {
-    const labelName: string = lineStrWithoutComments.substring(
-      0,
-      lineStrWithoutComments.length - 1,
-    );
+  const trimmedLine: string = lineStrWithoutComments.trim();
+  if (trimmedLine === "") {
+    return undefined;
+  }
+  if (trimmedLine.includes(":")) {
+    const labelName: string = trimmedLine.split(":")[0];
     return { command: "label", labelName };
   }
-  const splitLine: string[] = lineStrWithoutComments.split(" ");
+  const splitLine: string[] = trimmedLine.split(" ");
   const commandWithArgs: Instruction = parseCommand(splitLine);
   return commandWithArgs;
 }
@@ -80,7 +87,10 @@ function parseRegisterOperation(
   command: RegisterCommand,
   args: string[],
 ): RegisterOperation {
-  const targetReg: RegisterKey = args[0].substring(0, args[0].length - 1); // to get rid of the comma
+  let targetReg: RegisterKey = args[0];
+  if (targetReg[targetReg.length - 1] === ",") {
+    targetReg = targetReg.substring(0, targetReg.length - 1); // to get rid of the comma
+  }
   let regOrVal: Integer | RegisterKey = args[1];
   if (command === "inc") {
     regOrVal = 1;

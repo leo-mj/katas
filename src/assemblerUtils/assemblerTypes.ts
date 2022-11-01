@@ -47,12 +47,15 @@ export interface LabelJump {
 
 export type FunctionCallCommand = "call" | "ret" | "msg" | "end";
 export type FunctionCall =
-  | { command: "ret" | "end" }
+  { command: "ret" | "end" }
   | { command: "call"; labelName: string }
   | { command: "msg"; message: string };
 
 export type ReturnValue = number | string;
-export interface ExecutionReturns {
+export interface ExecutionContext {
+  linePointer: number;
   nextLine: number;
   returnValue: ReturnValue;
+  linesToReturnTo: number[];
+  dictionary: Dictionary
 }

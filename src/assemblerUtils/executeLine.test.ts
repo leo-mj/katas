@@ -1,4 +1,4 @@
-import { Dictionary } from "./assemblerTypes";
+import { Dictionary, ExecutionContext } from "./assemblerTypes";
 import { executeCmp, executeRegisterOperation } from "./executeLine";
 
 test("executeRegisterOperation returns the correct dictionary", () => {
@@ -34,19 +34,26 @@ test("executeCmp returns the correct comparison", () => {
     a: 4,
     b: 3,
   };
+  const executionContext: ExecutionContext = {
+    linePointer: 0,
+    nextLine: 1,
+    returnValue: -1,
+    linesToReturnTo: [],
+    dictionary: testDictionary
+  }
   expect(
-    executeCmp({ command: "cmp", regOrVal1: 1, regOrVal2: 3 }, testDictionary),
+    executeCmp({ command: "cmp", regOrVal1: 1, regOrVal2: 3 }, executionContext),
   ).toBe("less");
   expect(
     executeCmp(
       { command: "cmp", regOrVal1: "b", regOrVal2: 3 },
-      testDictionary,
+      executionContext,
     ),
   ).toBe("equal");
   expect(
     executeCmp(
       { command: "cmp", regOrVal1: "a", regOrVal2: "b" },
-      testDictionary,
+      executionContext,
     ),
   ).toBe("greater");
 });
