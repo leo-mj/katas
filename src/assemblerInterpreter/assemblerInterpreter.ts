@@ -3,8 +3,8 @@ import {
   Dictionary,
   ReturnValue,
 } from "./assemblerUtils/assemblerTypes";
-import { executeAllLines } from "./assemblerUtils/executeLine";
-import { parseProgram } from "./assemblerUtils/parseProgram";
+import { executeAllLines } from "./executeLine";
+import { parseProgram } from "./parseProgram";
 
 export function assemblerInterpreter(program: string): ReturnValue {
   const programLines: Instruction[] = parseProgram(program);
