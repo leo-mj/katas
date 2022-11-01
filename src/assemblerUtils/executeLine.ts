@@ -132,7 +132,7 @@ export function executeRet(executionContext: ExecutionContext): void {
 }
 
 export function executeCall(
-  { linePointer, nextLine, linesToReturnTo }: ExecutionContext,
+ executionContext: ExecutionContext,
   currentLine: FunctionCall,
   programLines: Instruction[],
 ): void {
@@ -141,8 +141,8 @@ export function executeCall(
     throw new Error("No label after call command");
   }
   const { labelName } = currentLine;
-  nextLine = findLabelIndex(labelName, programLines) + 1;
-  linesToReturnTo.push(linePointer + 1);
+  executionContext.nextLine = findLabelIndex(labelName, programLines) + 1;
+  executionContext.linesToReturnTo.push(executionContext.linePointer + 1);
   return;
 }
 
@@ -199,8 +199,8 @@ export function findLabelIndex(
   programLines: Instruction[],
 ): number {
   for (let i = 0; i < programLines.length; i++) {
-    const { command } = programLines[i];
-    if (command === labelName) {
+    const currentLine = programLines[i];
+    if (currentLine.command === "label" && currentLine.labelName === labelName) {
       return i;
     }
   }

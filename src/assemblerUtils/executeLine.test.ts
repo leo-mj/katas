@@ -1,5 +1,6 @@
-import { Dictionary, ExecutionContext } from "./assemblerTypes";
+import { Dictionary, ExecutionContext, Instruction } from "./assemblerTypes";
 import {
+  executeCall,
   executeCmp,
   executeMsg,
   executeRegisterOperation,
@@ -66,7 +67,7 @@ test("executeCmp returns the correct comparison", () => {
   ).toBe("greater");
 });
 
-test("executeMsg returns the correct message", () => {
+test("executeMsg sets returnValue to the correct message", () => {
   const testDictionary: Dictionary = { a: 3 };
   const executionContext: ExecutionContext = {
     linePointer: 0,
@@ -87,7 +88,7 @@ test("executeMsg returns the correct message", () => {
     dictionary: testDictionary})
 });
 
-test("executeRet returns the correct line", () => {
+test("executeRet changes nextLine to the correct line", () => {
   const testDictionary: Dictionary = { a: 3 };
   const executionContext: ExecutionContext = {
     linePointer: 0,
@@ -106,8 +107,29 @@ test("executeRet returns the correct line", () => {
   });
 });
 
-/*const programLines = [
-  {command: "label", labelName: "ret should return to line after this"},
-  {command: "label", labelName: "ret should return to this line"},
-  {command: "ret"}
-];*/
+test("executeCall sets nextLine and linesToReturnTo to the correct values", () => {
+  const programLines: Instruction[] = [
+    {command: "call", labelName: "func"},
+    {command: "label", labelName: "nextLine should not be 1"},
+    {command: "label", labelName: "func"},
+    {command: "label", labelName: "nextLine should be 3"}
+  ];
+  const testDictionary: Dictionary = { a: 3 };
+  const executionContext: ExecutionContext = {
+    linePointer: 0,
+    nextLine: 1,
+    returnValue: -1,
+    linesToReturnTo: [],
+    dictionary: testDictionary,
+  };
+  executeCall(executionContext, {command: "call", labelName:"func"}, programLines);
+  expect(executionContext).toStrictEqual({
+    linePointer: 0,
+    nextLine: 3,
+    returnValue: -1,
+    linesToReturnTo: [1],
+    dictionary: testDictionary,
+  })
+})
+
+/**/
