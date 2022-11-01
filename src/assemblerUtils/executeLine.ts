@@ -90,17 +90,17 @@ export function executeLine(
 }
 
 export function executeMsg(
-  { returnValue, dictionary }: ExecutionContext,
+  executionContext: ExecutionContext,
   currentLine: FunctionCall,
-): ReturnValue {
+): void {
   if (currentLine.command !== "msg") {
     throw new Error("Unknown command: " + currentLine.command);
   }
   const { message } = currentLine;
   const splitMessage: string[] = message.split(", ");
-  const translatedMessage: string = translateMessage(splitMessage, dictionary);
-  returnValue = translatedMessage;
-  return returnValue;
+  const translatedMessage: string = translateMessage(splitMessage, executionContext.dictionary);
+  executionContext.returnValue = translatedMessage;
+  return;
 }
 
 export function translateMessage(
@@ -121,15 +121,13 @@ export function translateMessage(
   return translatedMessage;
 }
 
-export function executeRet({
-  nextLine,
-  linesToReturnTo,
-}: ExecutionContext): void {
-  if (linesToReturnTo.length < 1) {
+export function executeRet(executionContext: ExecutionContext): void {
+  let {linesToReturnTo, nextLine} = executionContext;
+  if (executionContext.linesToReturnTo.length < 1) {
     throw new Error("No line to return to");
   }
-  nextLine = linesToReturnTo[linesToReturnTo.length - 1];
-  linesToReturnTo.pop();
+  executionContext.nextLine = executionContext.linesToReturnTo[executionContext.linesToReturnTo.length - 1];
+  executionContext.linesToReturnTo.pop();
   return;
 }
 

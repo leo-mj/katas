@@ -3,6 +3,7 @@ import {
   executeCmp,
   executeMsg,
   executeRegisterOperation,
+  executeRet,
 } from "./executeLine";
 
 test("executeRegisterOperation returns the correct dictionary", () => {
@@ -74,10 +75,39 @@ test("executeMsg returns the correct message", () => {
     linesToReturnTo: [],
     dictionary: testDictionary,
   };
-  expect(
-    executeMsg(executionContext, {
+  executeMsg(executionContext, {
       command: "msg",
       message: "'(5+1)/2 = ', a",
-    }),
-  ).toBe("(5+1)/2 = 3");
+  })
+  expect(executionContext).toStrictEqual({
+    linePointer: 0,
+    nextLine: 1,
+    returnValue: ("(5+1)/2 = 3"),
+    linesToReturnTo: [],
+    dictionary: testDictionary})
 });
+
+test("executeRet returns the correct line", () => {
+  const testDictionary: Dictionary = { a: 3 };
+  const executionContext: ExecutionContext = {
+    linePointer: 0,
+    nextLine: 1,
+    returnValue: -1,
+    linesToReturnTo: [4],
+    dictionary: testDictionary,
+  };
+  executeRet(executionContext);
+  expect(executionContext).toStrictEqual({
+    linePointer: 0,
+    nextLine: 4,
+    returnValue: -1,
+    linesToReturnTo: [],
+    dictionary: testDictionary,
+  });
+});
+
+/*const programLines = [
+  {command: "label", labelName: "ret should return to line after this"},
+  {command: "label", labelName: "ret should return to this line"},
+  {command: "ret"}
+];*/
