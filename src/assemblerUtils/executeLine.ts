@@ -99,9 +99,8 @@ export function executeMsg(
     throw new Error("Unknown command: " + currentLine.command);
   }
   const { message } = currentLine;
-  const splitMessage: string[] = message.split(", ");
   const translatedMessage: string = translateMessage(
-    splitMessage,
+    message,
     executionContext.dictionary,
   );
   executionContext.returnValue = translatedMessage;
@@ -109,25 +108,62 @@ export function executeMsg(
 }
 
 export function translateMessage(
-  splitMessage: string[],
+  message: string,
   dictionary: Dictionary,
 ): string {
-  const translatedSplitMessage: string[] = splitMessage.map((part) => {
+  const splitMessage = cleanUpMessage(message);
+  const translatedSplitMessage = splitMessage.map((part) => {
     if (part.includes("'")) {
-      const strMsg: string = part
-        .split("'")
-        .filter((chars) => chars !== " " && chars !== "")[0];
+      const strMsg = part.split("'").filter((char) => char !== "");
       return strMsg;
     }
     const registerKey: RegisterKey = part.trim();
+
     if (dictionary[registerKey] !== undefined) {
       return dictionary[registerKey].toString();
     }
-    throw new Error(registerKey + " is not in dictionary: " + dictionary);
+    throw new Error(part + " is not in dictionary: " + dictionary);
   });
 
-  const translatedMessage: string = translatedSplitMessage.join("");
+  const translatedMessage = translatedSplitMessage.join("");
   return translatedMessage;
+}
+
+function cleanUpMessage(message: string): string[] {
+  const splitMessage: string[] = [];
+  let betweenTicks = false;
+  let currentWord = "";
+  for (let i = 0; i < message.length; i++) {
+    const char = message[i];
+    switch (betweenTicks) {
+      case false:
+        if (char !== "'" && char !== "" && char !== " " && char !== ",") {
+          currentWord += char;
+        } else if (char === "'" && currentWord !== "") {
+          splitMessage.push(currentWord);
+          currentWord = "'";
+          betweenTicks = true;
+        } else if (char === "'") {
+          currentWord = "'";
+          betweenTicks = true;
+        }
+        break;
+      case true:
+        if (char !== "'") {
+          currentWord += char;
+        } else {
+          currentWord += "'";
+          splitMessage.push(currentWord);
+          currentWord = "";
+          betweenTicks = false;
+        }
+        break;
+    }
+  }
+  if (currentWord !== "") {
+    splitMessage.push(currentWord);
+  }
+  return splitMessage;
 }
 
 export function executeRet(executionContext: ExecutionContext): void {
@@ -303,11 +339,7 @@ export function executeRegisterOperation(
       }
       break;
     case "div":
-      if (typeof regOrVal === "number") {
-        dictionary[targetReg] /= regOrVal;
-      } else {
-        dictionary[targetReg] /= dictionary[regOrVal];
-      }
+      integerDivision(dictionary, targetReg, regOrVal);
       break;
     default:
       throw new Error(
@@ -315,4 +347,17 @@ export function executeRegisterOperation(
       );
   }
   return dictionary;
+}
+
+function integerDivision(
+  dictionary: Dictionary,
+  targetReg: RegisterKey,
+  regOrVal: Integer | string,
+): void {
+  const divisor: number =
+    typeof regOrVal === "number" ? regOrVal : dictionary[regOrVal];
+  const remainder = dictionary[targetReg] % divisor;
+  const quotient = (dictionary[targetReg] - remainder) / divisor;
+  dictionary[targetReg] = quotient;
+  return;
 }
