@@ -167,9 +167,7 @@ export function executeLabelJump(
       return;
     case "jne":
       if (executionContext.returnValue !== "equal") {
-        console.log("jne");
         executionContext.nextLine = labelIndex + 1;
-        console.log(executionContext);
       } else {
         executionContext.nextLine++;
       }

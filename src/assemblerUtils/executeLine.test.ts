@@ -162,7 +162,7 @@ test("executeLabelJump sets nextLine to the correct value", () => {
   );
   expect(executionContextJne).toStrictEqual({
     linePointer: 0,
-    nextLine: 1,
+    nextLine: 3,
     returnValue: "less",
     linesToReturnTo: [],
     dictionary: testDictionary,

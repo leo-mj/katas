@@ -32,10 +32,6 @@ export function parseLine(lineStr: string): Instruction | undefined {
   if (trimmedLine === "") {
     return undefined;
   }
-  if (trimmedLine.includes(":")) {
-    const labelName: string = trimmedLine.split(":")[0];
-    return { command: "label", labelName };
-  }
   const splitLine: string[] = trimmedLine.split(" ");
   const commandWithArgs: Instruction = parseCommand(splitLine);
   return commandWithArgs;
@@ -43,6 +39,10 @@ export function parseLine(lineStr: string): Instruction | undefined {
 
 export function parseCommand(splitLine: string[]): Instruction {
   const command: string = splitLine[0];
+  if (command.includes(":")) {
+    const labelName: string = command.split(":")[0];
+    return { command: "label", labelName };
+  }
   let args: string[] = splitLine.slice(1);
   if (args[0] === "" || args[0] === " ") {
     args = args.slice(1);
