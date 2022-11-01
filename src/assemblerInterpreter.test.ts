@@ -13,7 +13,7 @@ function:
     ret`;
   expect(assemblerInterpreter(testInput1)).toBe("(5+1)/2 = 3");
 
-  /*const program_fail = `call  func1
+  const program_fail = `call  func1
 call  print
 end
 
@@ -27,5 +27,49 @@ func2:
 print:
     msg 'This program should return -1'`;
 
-expect(assemblerInterpreter(program_fail)).toBe(-1);*/
+  expect(assemblerInterpreter(program_fail)).toBe(-1);
+
+  const nestedCall = ` 
+  call  func1
+  call  print
+  end
+
+  func1:
+      call  func2
+      ret
+
+  func2:
+      ret
+
+  print:
+      msg 'This program should return this message'
+      ret
+`;
+  expect(assemblerInterpreter(nestedCall)).toBe(
+    "This program should return this message",
+  );
+
+  /*const program_power = `mov   a, 2            ; value1
+mov   b, 10           ; value2
+mov   c, a            ; temp1
+mov   d, b            ; temp2
+call  proc_func
+call  print
+end
+
+proc_func:
+    cmp   d, 1
+    je    continue
+    mul   c, a
+    dec   d
+    call  proc_func
+
+continue:
+    ret
+
+print:
+    msg a, '^', b, ' = ', c
+    ret`;
+
+expect(assemblerInterpreter(program_power)).toBe('2^10 = 1024');*/
 });
