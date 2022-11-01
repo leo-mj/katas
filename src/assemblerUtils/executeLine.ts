@@ -209,27 +209,27 @@ export function findLabelIndex(
 
 export function executeCmp(
   currentLine: Cmp,
-  { returnValue, dictionary }: ExecutionContext,
-): ReturnValue {
+  executionContext: ExecutionContext,
+): void {
   const { regOrVal1, regOrVal2 } = currentLine;
   let [val1, val2]: (string | Integer)[] = [regOrVal1, regOrVal2];
   if (typeof val1 === "string") {
-    val1 = dictionary[val1];
+    val1 = executionContext.dictionary[val1];
   }
   if (typeof val2 === "string") {
-    val2 = dictionary[val2];
+    val2 = executionContext.dictionary[val2];
   }
   if (val1 === val2) {
-    returnValue = "equal";
-    return returnValue;
+    executionContext.returnValue = "equal";
+    return;
   }
   if (val1 > val2) {
-    returnValue = "greater";
-    return returnValue;
+    executionContext.returnValue = "greater";
+    return;
   }
   if (val1 < val2) {
-    returnValue = "less";
-    return returnValue;
+    executionContext.returnValue = "less";
+    return;
   }
   throw new Error(
     "Unknown registers or values: " + regOrVal1 + " and " + regOrVal2,

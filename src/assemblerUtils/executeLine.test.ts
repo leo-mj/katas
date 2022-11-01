@@ -7,35 +7,34 @@ import {
   executeRet,
 } from "./executeLine";
 
-test("executeRegisterOperation returns the correct dictionary", () => {
+test("executeRegisterOperation changes the dictionary correctly", () => {
   const testDictionary: Dictionary = {};
-  expect(
-    executeRegisterOperation(
-      { command: "mov", targetReg: "a", regOrVal: 5 },
-      testDictionary,
-    ),
-  ).toStrictEqual({ a: 5 });
-  expect(
-    executeRegisterOperation(
-      { command: "mov", targetReg: "b", regOrVal: 2 },
-      testDictionary,
-    ),
-  ).toStrictEqual({ a: 5, b: 2 });
-  expect(
-    executeRegisterOperation(
-      { command: "add", targetReg: "b", regOrVal: 3 },
-      testDictionary,
-    ),
+  executeRegisterOperation(
+    { command: "mov", targetReg: "a", regOrVal: 5 },
+    testDictionary,
+  ),
+  expect(testDictionary).toStrictEqual({ a: 5 });
+  executeRegisterOperation(
+    { command: "mov", targetReg: "b", regOrVal: 2 },
+    testDictionary,
+  );
+  expect(testDictionary).toStrictEqual({ a: 5, b: 2 });
+
+  executeRegisterOperation(
+    { command: "add", targetReg: "b", regOrVal: 3 },
+    testDictionary,
+  );
+  expect(testDictionary
   ).toStrictEqual({ a: 5, b: 5 });
-  expect(
-    executeRegisterOperation(
-      { command: "div", targetReg: "b", regOrVal: "a" },
-      testDictionary,
-    ),
+  executeRegisterOperation(
+    { command: "div", targetReg: "b", regOrVal: "a" },
+    testDictionary,
+  );
+  expect(testDictionary
   ).toStrictEqual({ a: 5, b: 1 });
 });
 
-test("executeCmp returns the correct comparison", () => {
+test("executeCmp sets returnValue to the correct comparison", () => {
   const testDictionary: Dictionary = {
     a: 4,
     b: 3,
@@ -47,23 +46,23 @@ test("executeCmp returns the correct comparison", () => {
     linesToReturnTo: [],
     dictionary: testDictionary,
   };
-  expect(
-    executeCmp(
-      { command: "cmp", regOrVal1: 1, regOrVal2: 3 },
-      executionContext,
-    ),
+  executeCmp(
+    { command: "cmp", regOrVal1: 1, regOrVal2: 3 },
+    executionContext,
+  );
+  expect(executionContext.returnValue
   ).toBe("less");
-  expect(
-    executeCmp(
-      { command: "cmp", regOrVal1: "b", regOrVal2: 3 },
-      executionContext,
-    ),
+  executeCmp(
+    { command: "cmp", regOrVal1: "b", regOrVal2: 3 },
+    executionContext,
+  );
+  expect(executionContext.returnValue
   ).toBe("equal");
-  expect(
-    executeCmp(
-      { command: "cmp", regOrVal1: "a", regOrVal2: "b" },
-      executionContext,
-    ),
+  executeCmp(
+    { command: "cmp", regOrVal1: "a", regOrVal2: "b" },
+    executionContext,
+  );
+  expect(executionContext.returnValue
   ).toBe("greater");
 });
 
