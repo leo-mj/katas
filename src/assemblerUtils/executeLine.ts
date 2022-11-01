@@ -6,7 +6,6 @@ import {
   Instruction,
   Integer,
   LabelJump,
-  RegisterKey,
   RegisterOperation,
   ReturnValue,
 } from "./assemblerTypes";
@@ -112,7 +111,7 @@ export function translateMessage(
       const strMsg = part.split("'").filter((char) => char !== "");
       return strMsg;
     }
-    const registerKey: RegisterKey = part.trim();
+    const registerKey: string = part.trim();
 
     if (dictionary[registerKey] !== undefined) {
       return dictionary[registerKey].toString();
@@ -179,13 +178,14 @@ export function executeCall(
   programLines: Instruction[],
 ): void {
   const { command } = currentLine;
-  if (command !== "call") {
+  if (command === "call") {
+    const { labelName } = currentLine;
+    executionContext.nextLine = findLabelIndex(labelName, programLines) + 1;
+    executionContext.linesToReturnTo.push(executionContext.linePointer + 1);
+    return;
+  } else {
     throw new Error("No label after call command");
   }
-  const { labelName } = currentLine;
-  executionContext.nextLine = findLabelIndex(labelName, programLines) + 1;
-  executionContext.linesToReturnTo.push(executionContext.linePointer + 1);
-  return;
 }
 
 export function executeLabelJump(

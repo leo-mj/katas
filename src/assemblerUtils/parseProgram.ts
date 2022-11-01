@@ -4,7 +4,6 @@ import {
   LabelJump,
   FunctionCall,
   RegisterCommand,
-  RegisterKey,
   Integer,
   LabelJumpCommand,
   FunctionCallCommand,
@@ -88,11 +87,11 @@ function parseRegisterOperation(
   argsRaw: string[],
 ): RegisterOperation {
   const args: string[] = argsRaw.filter((arg) => arg !== "" && arg !== " ");
-  let targetReg: RegisterKey = args[0];
+  let targetReg: string = args[0];
   if (targetReg[targetReg.length - 1] === ",") {
     targetReg = targetReg.substring(0, targetReg.length - 1); // to get rid of the comma
   }
-  let regOrVal: Integer | RegisterKey = args[1];
+  let regOrVal: Integer | string = args[1];
   if (command === "inc") {
     regOrVal = 1;
   } else if (command === "dec") {

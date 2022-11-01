@@ -1,7 +1,6 @@
 export type Integer = number;
-export type RegisterKey = string;
 export interface Dictionary {
-  [key: RegisterKey]: Integer;
+  [key: string]: Integer;
 }
 
 export type Instruction =
@@ -22,8 +21,8 @@ export type RegisterCommand =
   | "dec";
 export type RegisterOperation = {
   command: RegisterCommand;
-  targetReg: RegisterKey;
-  regOrVal: Integer | RegisterKey;
+  targetReg: string;
+  regOrVal: Integer | string;
 };
 
 export interface Cmp {
