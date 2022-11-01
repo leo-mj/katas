@@ -1,6 +1,6 @@
 import { assemblerInterpreter } from "./assemblerInterpreter";
 
-test.skip("assemblerInterpreter returns the correct registers", () => {
+test("assemblerInterpreter returns the correct registers", () => {
   const testInput1 = `; My first program
 mov  a, 5
 inc  a
@@ -11,9 +11,9 @@ end
 function:
     div  a, 2
     ret`;
-expect(assemblerInterpreter(testInput1)).toBe("(5+1)/2 = 3");
+  expect(assemblerInterpreter(testInput1)).toBe("(5+1)/2 = 3");
 
-/*const program_fail = `call  func1
+  /*const program_fail = `call  func1
 call  print
 end
 

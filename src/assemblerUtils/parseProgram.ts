@@ -4,7 +4,6 @@ import {
   LabelJump,
   FunctionCall,
   RegisterCommand,
-  RegisterKey,
   Integer,
   LabelJumpCommand,
   FunctionCallCommand,
@@ -15,7 +14,7 @@ export function parseProgram(program: string): Instruction[] {
   const rawLines: string[] = program.split("\n");
   const linesAsInstructions: Instruction[] = [];
   for (const line of rawLines) {
-    const instruction: Instruction|undefined = parseLine(line);
+    const instruction: Instruction | undefined = parseLine(line);
     if (instruction !== undefined) {
       linesAsInstructions.push(instruction);
     }
@@ -32,10 +31,6 @@ export function parseLine(lineStr: string): Instruction | undefined {
   if (trimmedLine === "") {
     return undefined;
   }
-  if (trimmedLine.includes(":")) {
-    const labelName: string = trimmedLine.split(":")[0];
-    return { command: "label", labelName };
-  }
   const splitLine: string[] = trimmedLine.split(" ");
   const commandWithArgs: Instruction = parseCommand(splitLine);
   return commandWithArgs;
@@ -43,6 +38,10 @@ export function parseLine(lineStr: string): Instruction | undefined {
 
 export function parseCommand(splitLine: string[]): Instruction {
   const command: string = splitLine[0];
+  if (command.includes(":")) {
+    const labelName: string = command.split(":")[0];
+    return { command: "label", labelName };
+  }
   let args: string[] = splitLine.slice(1);
   if (args[0] === "" || args[0] === " ") {
     args = args.slice(1);
@@ -85,13 +84,14 @@ export function parseCommand(splitLine: string[]): Instruction {
 
 function parseRegisterOperation(
   command: RegisterCommand,
-  args: string[],
+  argsRaw: string[],
 ): RegisterOperation {
-  let targetReg: RegisterKey = args[0];
+  const args: string[] = argsRaw.filter((arg) => arg !== "" && arg !== " ");
+  let targetReg: string = args[0];
   if (targetReg[targetReg.length - 1] === ",") {
     targetReg = targetReg.substring(0, targetReg.length - 1); // to get rid of the comma
   }
-  let regOrVal: Integer | RegisterKey = args[1];
+  let regOrVal: Integer | string = args[1];
   if (command === "inc") {
     regOrVal = 1;
   } else if (command === "dec") {
@@ -102,30 +102,44 @@ function parseRegisterOperation(
   return { command, targetReg, regOrVal };
 }
 
-function parseCmp(args: string[]): Cmp {
-  const [regOrVal1, regOrVal2]: string[] = args;
+function parseCmp(argsRaw: string[]): Cmp {
+  const args: string[] = argsRaw.filter((arg) => arg !== "" && arg !== " ");
+  let regOrVal1: string | Integer = args[0].substring(0, args[0].length - 1); // to get rid of the comma
+  if (regOrVal1.toUpperCase() === regOrVal1.toLowerCase()) {
+    regOrVal1 = parseInt(regOrVal1);
+  }
+  let regOrVal2: string | Integer = args[1];
+  if (regOrVal2.toUpperCase() === regOrVal2.toLowerCase()) {
+    regOrVal2 = parseInt(regOrVal2);
+  }
+
   return {
     command: "cmp",
-    regOrVal1: regOrVal1.substring(0, regOrVal1.length - 1),
+    regOrVal1,
     regOrVal2,
   };
 }
 
-function parseLabelJump(command: LabelJumpCommand, args: string[]): LabelJump {
+function parseLabelJump(
+  command: LabelJumpCommand,
+  argsRaw: string[],
+): LabelJump {
+  const args: string[] = argsRaw.filter((arg) => arg !== "" && arg !== " ");
   const labelName: string = args[0];
   return { command, labelName };
 }
 
 function parseFunctionCall(
   command: FunctionCallCommand,
-  args: string[],
+  argsRaw: string[],
 ): FunctionCall {
   if (command === "end" || command === "ret") {
     return { command };
   }
   if (command === "call") {
+    const args: string[] = argsRaw.filter((arg) => arg !== "" && arg !== " ");
     const labelName: string = args[0];
     return { command, labelName };
   }
-  return { command, message: args.join(" ") };
+  return { command, message: argsRaw.join(" ") };
 }

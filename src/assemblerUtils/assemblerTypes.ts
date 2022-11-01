@@ -1,7 +1,6 @@
 export type Integer = number;
-export type RegisterKey = string;
 export interface Dictionary {
-  [key: RegisterKey]: Integer;
+  [key: string]: Integer;
 }
 
 export type Instruction =
@@ -22,8 +21,8 @@ export type RegisterCommand =
   | "dec";
 export type RegisterOperation = {
   command: RegisterCommand;
-  targetReg: RegisterKey;
-  regOrVal: Integer | RegisterKey;
+  targetReg: string;
+  regOrVal: Integer | string;
 };
 
 export interface Cmp {
@@ -47,7 +46,7 @@ export interface LabelJump {
 
 export type FunctionCallCommand = "call" | "ret" | "msg" | "end";
 export type FunctionCall =
-  { command: "ret" | "end" }
+  | { command: "ret" | "end" }
   | { command: "call"; labelName: string }
   | { command: "msg"; message: string };
 
@@ -57,5 +56,5 @@ export interface ExecutionContext {
   nextLine: number;
   returnValue: ReturnValue;
   linesToReturnTo: number[];
-  dictionary: Dictionary
+  dictionary: Dictionary;
 }
