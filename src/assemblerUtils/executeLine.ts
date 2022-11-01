@@ -168,39 +168,51 @@ export function executeLabelJump(
         console.log("jne");
         executionContext.nextLine = labelIndex + 1;
         console.log(executionContext);
-        return;
+      } else {
+        executionContext.nextLine++;
       }
+      return;
     case "je":
       if (executionContext.returnValue === "equal") {
         executionContext.nextLine = labelIndex + 1;
-        return;
+      } else {
+        executionContext.nextLine++;
       }
+      return;
     case "jge":
       if (
         executionContext.returnValue === "equal" ||
         executionContext.returnValue === "greater"
       ) {
         executionContext.nextLine = labelIndex + 1;
-        return;
+      } else {
+        executionContext.nextLine++;
       }
+      return;
     case "jg":
       if (executionContext.returnValue === "greater") {
         executionContext.nextLine = labelIndex + 1;
-        return;
+      } else {
+        executionContext.nextLine++;
       }
+      return;
     case "jle":
       if (
         executionContext.returnValue === "equal" ||
         executionContext.returnValue === "less"
       ) {
         executionContext.nextLine = labelIndex + 1;
-        return;
+      } else {
+        executionContext.nextLine++;
       }
+      return;
     case "jl":
       if (executionContext.returnValue === "less") {
         executionContext.nextLine = labelIndex + 1;
-        return;
+      } else {
+        executionContext.nextLine++;
       }
+      return;
     default:
       throw new Error(`Unknown label: ${labelName}, or command: ${command}`);
   }
