@@ -85,8 +85,9 @@ export function parseCommand(splitLine: string[]): Instruction {
 
 function parseRegisterOperation(
   command: RegisterCommand,
-  args: string[],
+  argsRaw: string[],
 ): RegisterOperation {
+  const args: string[] = argsRaw.filter((arg) => arg !== "" && arg !== " ");
   let targetReg: RegisterKey = args[0];
   if (targetReg[targetReg.length - 1] === ",") {
     targetReg = targetReg.substring(0, targetReg.length - 1); // to get rid of the comma
@@ -102,30 +103,44 @@ function parseRegisterOperation(
   return { command, targetReg, regOrVal };
 }
 
-function parseCmp(args: string[]): Cmp {
-  const [regOrVal1, regOrVal2]: string[] = args;
+function parseCmp(argsRaw: string[]): Cmp {
+  const args: string[] = argsRaw.filter((arg) => arg !== "" && arg !== " ");
+  let regOrVal1: string | Integer = args[0].substring(0, args[0].length - 1); // to get rid of the comma
+  if (regOrVal1.toUpperCase() === regOrVal1.toLowerCase()) {
+    regOrVal1 = parseInt(regOrVal1);
+  }
+  let regOrVal2: string | Integer = args[1];
+  if (regOrVal2.toUpperCase() === regOrVal2.toLowerCase()) {
+    regOrVal1 = parseInt(regOrVal2);
+  }
+
   return {
     command: "cmp",
-    regOrVal1: regOrVal1.substring(0, regOrVal1.length - 1),
+    regOrVal1,
     regOrVal2,
   };
 }
 
-function parseLabelJump(command: LabelJumpCommand, args: string[]): LabelJump {
+function parseLabelJump(
+  command: LabelJumpCommand,
+  argsRaw: string[],
+): LabelJump {
+  const args: string[] = argsRaw.filter((arg) => arg !== "" && arg !== " ");
   const labelName: string = args[0];
   return { command, labelName };
 }
 
 function parseFunctionCall(
   command: FunctionCallCommand,
-  args: string[],
+  argsRaw: string[],
 ): FunctionCall {
   if (command === "end" || command === "ret") {
     return { command };
   }
   if (command === "call") {
+    const args: string[] = argsRaw.filter((arg) => arg !== "" && arg !== " ");
     const labelName: string = args[0];
     return { command, labelName };
   }
-  return { command, message: args.join(" ") };
+  return { command, message: argsRaw.join(" ") };
 }
