@@ -47,6 +47,49 @@ test("parseProgram returns the correct programLines", () => {
     { command: "label", labelName: "print" },
     { command: "msg", message: "'This program should return -1'" },
   ]);
+
+  const program_power_two = `mov   a, 2            ; value1
+mov   b, 2           ; value2
+mov   c, a            ; temp1
+mov   d, b            ; temp2
+call  proc_func
+call  print
+end
+
+proc_func:
+    cmp   d, 1
+    je    continue
+    mul   c, a
+    dec   d
+    call  proc_func
+
+continue:
+    ret
+
+print:
+    msg a, '^', b, ' = ', c
+    ret`;
+
+  expect(parseProgram(program_power_two)).toStrictEqual([
+    { command: "mov", targetReg: "a", regOrVal: 2 },
+    { command: "mov", targetReg: "b", regOrVal: 2 },
+    { command: "mov", targetReg: "c", regOrVal: "a" },
+    { command: "mov", targetReg: "d", regOrVal: "b" },
+    { command: "call", labelName: "proc_func" },
+    { command: "call", labelName: "print" },
+    { command: "end" },
+    { command: "label", labelName: "proc_func" },
+    { command: "cmp", regOrVal1: "d", regOrVal2: 1 },
+    { command: "je", labelName: "continue" },
+    { command: "mul", targetReg: "c", regOrVal: "a" },
+    { command: "dec", targetReg: "d", regOrVal: -1 },
+    { command: "call", labelName: "proc_func" },
+    { command: "label", labelName: "continue" },
+    { command: "ret" },
+    { command: "label", labelName: "print" },
+    { command: "msg", message: "a, '^', b, ' = ', c" },
+    { command: "ret" },
+  ]);
 });
 
 test("parseLine returns the correct line", () => {
