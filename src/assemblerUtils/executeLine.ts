@@ -120,7 +120,7 @@ export function translateMessage(
       return strMsg;
     }
     const registerKey: RegisterKey = part.trim();
-    if (dictionary[registerKey]) {
+    if (dictionary[registerKey] !== undefined) {
       return dictionary[registerKey].toString();
     }
     throw new Error(registerKey + " is not in dictionary: " + dictionary);
