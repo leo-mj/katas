@@ -2,6 +2,7 @@ import { Dictionary, ExecutionContext, Instruction } from "./assemblerTypes";
 import {
   executeCall,
   executeCmp,
+  executeLabelJump,
   executeMsg,
   executeRegisterOperation,
   executeRet,
@@ -131,4 +132,34 @@ test("executeCall sets nextLine and linesToReturnTo to the correct values", () =
   })
 })
 
-/**/
+test("executeLabelJump sets nextLine to the correct value", () => {
+  const programLines: Instruction[] = [
+    {command: "label", labelName: "nextLine should not be 1"},
+    {command: "label", labelName: "func"},
+    {command: "label", labelName: "nextLine should be 3"}
+  ];
+  const testDictionary: Dictionary = { a: 3 };
+  const executionContextJne: ExecutionContext = {
+    linePointer: 0,
+    nextLine: 1,
+    returnValue: "less",
+    linesToReturnTo: [],
+    dictionary: testDictionary,
+  };
+  executeLabelJump(executionContextJne, {command: "jne", labelName: "func"}, programLines);
+  expect(executionContextJne).toStrictEqual({
+    linePointer: 0,
+    nextLine: 2,
+    returnValue: "less",
+    linesToReturnTo: [],
+    dictionary: testDictionary,
+  });
+  executeLabelJump(executionContextJne, {command: "je", labelName: "nextLine should not be 1"}, programLines);
+  expect(executionContextJne).toStrictEqual({
+    linePointer: 0,
+    nextLine: 1,
+    returnValue: "less",
+    linesToReturnTo: [],
+    dictionary: testDictionary,
+  });
+})

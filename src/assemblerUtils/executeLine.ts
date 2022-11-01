@@ -147,7 +147,7 @@ export function executeCall(
 }
 
 export function executeLabelJump(
-  { nextLine, returnValue, linesToReturnTo }: ExecutionContext,
+  executionContext: ExecutionContext,
   currentLine: LabelJump,
   programLines: Instruction[],
 ): void {
@@ -155,43 +155,43 @@ export function executeLabelJump(
   const labelIndex: number = findLabelIndex(labelName, programLines);
   switch (command) {
     case "jmp":
-      nextLine = labelIndex + 1;
+      executionContext.nextLine = labelIndex + 1;
       return;
     case "jne":
-      if (returnValue !== "equal") {
-        nextLine = labelIndex + 1;
+      if (executionContext.returnValue !== "equal") {
+        console.log("jne");
+        executionContext.nextLine = labelIndex + 1;
+        console.log(executionContext);
         return;
       }
-      break;
     case "je":
-      if (returnValue === "equal") {
-        nextLine = labelIndex + 1;
+      if (executionContext.returnValue === "equal") {
+        executionContext.nextLine = labelIndex + 1;
         return;
       }
     case "jge":
-      if (returnValue === "equal" || returnValue === "greater") {
-        nextLine = labelIndex + 1;
+      if (executionContext.returnValue === "equal" || executionContext.returnValue === "greater") {
+        executionContext.nextLine = labelIndex + 1;
         return;
       }
     case "jg":
-      if (returnValue === "greater") {
-        nextLine = labelIndex + 1;
+      if (executionContext.returnValue === "greater") {
+        executionContext.nextLine = labelIndex + 1;
         return;
       }
     case "jle":
-      if (returnValue === "equal" || returnValue === "less") {
-        nextLine = labelIndex + 1;
+      if (executionContext.returnValue === "equal" || executionContext.returnValue === "less") {
+        executionContext.nextLine = labelIndex + 1;
         return;
       }
     case "jl":
-      if (returnValue === "less") {
-        nextLine = labelIndex + 1;
+      if (executionContext.returnValue === "less") {
+        executionContext.nextLine = labelIndex + 1;
         return;
       }
     default:
       throw new Error(`Unknown label: ${labelName}, or command: ${command}`);
   }
-  return;
 }
 
 export function findLabelIndex(
