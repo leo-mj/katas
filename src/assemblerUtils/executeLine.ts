@@ -113,8 +113,11 @@ export function translateMessage(
   dictionary: Dictionary,
 ): string {
   const translatedSplitMessage: string[] = splitMessage.map((part) => {
-    if (part[0] === "'" && part[part.length - 1] === "'") {
-      return part.substring(1, part.length - 1);
+    if (part.includes("'")) {
+      const strMsg: string = part
+        .split("'")
+        .filter((chars) => chars !== " " && chars !== "")[0];
+      return strMsg;
     }
     const registerKey: RegisterKey = part.trim();
     if (dictionary[registerKey]) {
