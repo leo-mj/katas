@@ -177,8 +177,7 @@ export function executeCall(
   currentLine: FunctionCall,
   programLines: Instruction[],
 ): void {
-  const { command } = currentLine;
-  if (command === "call") {
+  if (currentLine.command === "call") {
     const { labelName } = currentLine;
     executionContext.nextLine = findLabelIndex(labelName, programLines) + 1;
     executionContext.linesToReturnTo.push(executionContext.linePointer + 1);
