@@ -6,6 +6,7 @@ import {
   Instruction,
   Integer,
   LabelJump,
+  RegisterKey,
   RegisterOperation,
 } from "./assemblerTypes";
 
@@ -115,10 +116,11 @@ export function translateMessage(
     if (part[0] === "'" && part[part.length - 1] === "'") {
       return part.substring(1, part.length - 1);
     }
-    if (dictionary[part]) {
-      return dictionary[part].toString();
+    const registerKey: RegisterKey = part.trim();
+    if (dictionary[registerKey]) {
+      return dictionary[registerKey].toString();
     }
-    throw new Error(part + " is not in dictionary: " + dictionary);
+    throw new Error(registerKey + " is not in dictionary: " + dictionary);
   });
 
   const translatedMessage: string = translatedSplitMessage.join("");
