@@ -15,7 +15,7 @@ export function parseProgram(program: string): Instruction[] {
   const rawLines: string[] = program.split("\n");
   const linesAsInstructions: Instruction[] = [];
   for (const line of rawLines) {
-    const instruction: Instruction|undefined = parseLine(line);
+    const instruction: Instruction | undefined = parseLine(line);
     if (instruction !== undefined) {
       linesAsInstructions.push(instruction);
     }

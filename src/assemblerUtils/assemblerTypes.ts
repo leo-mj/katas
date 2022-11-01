@@ -47,7 +47,7 @@ export interface LabelJump {
 
 export type FunctionCallCommand = "call" | "ret" | "msg" | "end";
 export type FunctionCall =
-  { command: "ret" | "end" }
+  | { command: "ret" | "end" }
   | { command: "call"; labelName: string }
   | { command: "msg"; message: string };
 
@@ -57,5 +57,5 @@ export interface ExecutionContext {
   nextLine: number;
   returnValue: ReturnValue;
   linesToReturnTo: number[];
-  dictionary: Dictionary
+  dictionary: Dictionary;
 }

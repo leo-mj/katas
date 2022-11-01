@@ -11,9 +11,9 @@ end
 function:
     div  a, 2
     ret`;
-expect(assemblerInterpreter(testInput1)).toBe("(5+1)/2 = 3");
+  expect(assemblerInterpreter(testInput1)).toBe("(5+1)/2 = 3");
 
-/*const program_fail = `call  func1
+  /*const program_fail = `call  func1
 call  print
 end
 

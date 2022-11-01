@@ -1,5 +1,9 @@
 import { Dictionary, ExecutionContext } from "./assemblerTypes";
-import { executeCmp, executeRegisterOperation } from "./executeLine";
+import {
+  executeCmp,
+  executeMsg,
+  executeRegisterOperation,
+} from "./executeLine";
 
 test("executeRegisterOperation returns the correct dictionary", () => {
   const testDictionary: Dictionary = {};
@@ -39,10 +43,13 @@ test("executeCmp returns the correct comparison", () => {
     nextLine: 1,
     returnValue: -1,
     linesToReturnTo: [],
-    dictionary: testDictionary
-  }
+    dictionary: testDictionary,
+  };
   expect(
-    executeCmp({ command: "cmp", regOrVal1: 1, regOrVal2: 3 }, executionContext),
+    executeCmp(
+      { command: "cmp", regOrVal1: 1, regOrVal2: 3 },
+      executionContext,
+    ),
   ).toBe("less");
   expect(
     executeCmp(
@@ -56,4 +63,21 @@ test("executeCmp returns the correct comparison", () => {
       executionContext,
     ),
   ).toBe("greater");
+});
+
+test("executeMsg returns the correct message", () => {
+  const testDictionary: Dictionary = { a: 3 };
+  const executionContext: ExecutionContext = {
+    linePointer: 0,
+    nextLine: 1,
+    returnValue: -1,
+    linesToReturnTo: [],
+    dictionary: testDictionary,
+  };
+  expect(
+    executeMsg(executionContext, {
+      command: "msg",
+      message: "'(5+1)/2 = ', a",
+    }),
+  ).toBe("(5+1)/2 = 3");
 });

@@ -19,17 +19,15 @@ export function executeAllLines(
     nextLine: 1,
     returnValue: -1,
     linesToReturnTo: [],
-    dictionary
-  }
-  const {linePointer, nextLine, returnValue} = executionContext;
+    dictionary,
+  };
+  const { linePointer, nextLine, returnValue } = executionContext;
 
   while (
     linePointer < programLines.length &&
     programLines[linePointer].command !== "end"
   ) {
-    executeLine(
-      executionContext, programLines
-    );
+    executeLine(executionContext, programLines);
     executionContext.linePointer = nextLine;
   }
 
@@ -45,9 +43,9 @@ export function executeAllLines(
 
 export function executeLine(
   executionContext: ExecutionContext,
-  programLines: Instruction[]
+  programLines: Instruction[],
 ): void {
-  const {linePointer, dictionary} = executionContext;
+  const { linePointer, dictionary } = executionContext;
   const currentLine: Instruction = programLines[linePointer];
   switch (currentLine.command) {
     case "comment":
@@ -74,10 +72,7 @@ export function executeLine(
     case "jg":
     case "jle":
     case "jl":
-      executeLabelJump(
-        executionContext,
-        currentLine,
-        programLines);
+      executeLabelJump(executionContext, currentLine, programLines);
       break;
     case "call":
       executeCall(executionContext, currentLine, programLines);
@@ -94,54 +89,67 @@ export function executeLine(
   return;
 }
 
-export function executeMsg({returnValue, dictionary}: ExecutionContext, currentLine: FunctionCall): void {
+export function executeMsg(
+  { returnValue, dictionary }: ExecutionContext,
+  currentLine: FunctionCall,
+): ReturnValue {
   if (currentLine.command !== "msg") {
-    throw new Error ("Unknown command: " + currentLine.command);
+    throw new Error("Unknown command: " + currentLine.command);
   }
-  const {message} = currentLine;
+  const { message } = currentLine;
   const splitMessage: string[] = message.split(", ");
   const translatedMessage: string = translateMessage(splitMessage, dictionary);
   returnValue = translatedMessage;
-  return;
+  return returnValue;
 }
 
-export function translateMessage(splitMessage: string[], dictionary: Dictionary): string {
-  const translatedSplitMessage: string[] = splitMessage.map(part => {
+export function translateMessage(
+  splitMessage: string[],
+  dictionary: Dictionary,
+): string {
+  const translatedSplitMessage: string[] = splitMessage.map((part) => {
     if (part[0] === "'" && part[part.length - 1] === "'") {
       return part.substring(1, part.length - 1);
     }
     if (dictionary[part]) {
       return dictionary[part].toString();
-    };
-    throw new Error (part + " is not in dictionary: " + dictionary);
-  })
+    }
+    throw new Error(part + " is not in dictionary: " + dictionary);
+  });
 
   const translatedMessage: string = translatedSplitMessage.join("");
   return translatedMessage;
 }
 
-export function executeRet({nextLine, linesToReturnTo}: ExecutionContext): void {
+export function executeRet({
+  nextLine,
+  linesToReturnTo,
+}: ExecutionContext): void {
   if (linesToReturnTo.length < 1) {
-    throw new Error ("No line to return to");
+    throw new Error("No line to return to");
   }
-  nextLine = linesToReturnTo[linesToReturnTo.length -1];
+  nextLine = linesToReturnTo[linesToReturnTo.length - 1];
   linesToReturnTo.pop();
   return;
 }
 
-export function executeCall({linePointer, nextLine, linesToReturnTo}: ExecutionContext, currentLine: FunctionCall, programLines: Instruction[]): void {
-  const {command} = currentLine;
+export function executeCall(
+  { linePointer, nextLine, linesToReturnTo }: ExecutionContext,
+  currentLine: FunctionCall,
+  programLines: Instruction[],
+): void {
+  const { command } = currentLine;
   if (command !== "call") {
-    throw new Error ("No label after call command");
+    throw new Error("No label after call command");
   }
   const { labelName } = currentLine;
   nextLine = findLabelIndex(labelName, programLines) + 1;
   linesToReturnTo.push(linePointer + 1);
-  return; 
+  return;
 }
 
 export function executeLabelJump(
-  {nextLine, returnValue, linesToReturnTo}: ExecutionContext,
+  { nextLine, returnValue, linesToReturnTo }: ExecutionContext,
   currentLine: LabelJump,
   programLines: Instruction[],
 ): void {
@@ -160,23 +168,28 @@ export function executeLabelJump(
     case "je":
       if (returnValue === "equal") {
         nextLine = labelIndex + 1;
-        return;      }
+        return;
+      }
     case "jge":
       if (returnValue === "equal" || returnValue === "greater") {
         nextLine = labelIndex + 1;
-        return;      }
+        return;
+      }
     case "jg":
       if (returnValue === "greater") {
         nextLine = labelIndex + 1;
-        return;      }
+        return;
+      }
     case "jle":
       if (returnValue === "equal" || returnValue === "less") {
         nextLine = labelIndex + 1;
-        return;      }
+        return;
+      }
     case "jl":
       if (returnValue === "less") {
         nextLine = labelIndex + 1;
-        return;      }
+        return;
+      }
     default:
       throw new Error(`Unknown label: ${labelName}, or command: ${command}`);
   }
@@ -198,7 +211,7 @@ export function findLabelIndex(
 
 export function executeCmp(
   currentLine: Cmp,
-  {returnValue, dictionary}: ExecutionContext,
+  { returnValue, dictionary }: ExecutionContext,
 ): ReturnValue {
   const { regOrVal1, regOrVal2 } = currentLine;
   let [val1, val2]: (string | Integer)[] = [regOrVal1, regOrVal2];
