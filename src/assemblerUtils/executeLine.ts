@@ -339,7 +339,9 @@ export function executeRegisterOperation(
       }
       break;
     case "div":
-      integerDivision(dictionary, targetReg, regOrVal);
+      const divisor: number =
+        typeof regOrVal === "number" ? regOrVal : dictionary[regOrVal];
+      dictionary[targetReg] = Math.floor(dictionary[targetReg] / divisor);
       break;
     default:
       throw new Error(
@@ -347,17 +349,4 @@ export function executeRegisterOperation(
       );
   }
   return dictionary;
-}
-
-function integerDivision(
-  dictionary: Dictionary,
-  targetReg: RegisterKey,
-  regOrVal: Integer | string,
-): void {
-  const divisor: number =
-    typeof regOrVal === "number" ? regOrVal : dictionary[regOrVal];
-  const remainder = dictionary[targetReg] % divisor;
-  const quotient = (dictionary[targetReg] - remainder) / divisor;
-  dictionary[targetReg] = quotient;
-  return;
 }
