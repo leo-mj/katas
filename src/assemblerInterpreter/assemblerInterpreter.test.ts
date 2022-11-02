@@ -86,7 +86,7 @@ continue:
 
   expect(assemblerInterpreter(program_power_returning)).toBe("2^2 = 4");
 
-  /*const program_power_two = `mov   a, 2            ; value1
+  const program_power_two = `mov   a, 2            ; value1
 mov   b, 2           ; value2
 mov   c, a            ; temp1
 mov   d, b            ; temp2
@@ -108,7 +108,7 @@ print:
     msg a, '^', b, ' = ', c
     ret`;
 
-expect(assemblerInterpreter(program_power_two)).toBe('2^2 = 4');*/
+  expect(assemblerInterpreter(program_power_two)).toBe("2^2 = 4");
 
   /*const program_power = `mov   a, 2            ; value1
 mov   b, 10           ; value2

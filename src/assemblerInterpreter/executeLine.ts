@@ -47,6 +47,7 @@ export function executeLine(
   switch (currentLine.command) {
     case "comment":
     case "label":
+      executionContext.nextLine = linePointer + 1;
       return;
     case "mov":
     case "inc":
