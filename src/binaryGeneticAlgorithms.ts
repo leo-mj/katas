@@ -1,3 +1,7 @@
+/*
+This kata is from: https://www.codewars.com/kata/526f35b9c103314662000007/train/typescript
+*/
+
 export interface GeneticAlgorithm {
   numberArr: number[];
   idealSum: number;
@@ -9,22 +13,26 @@ export class GeneticAlgorithm {
     this.idealSum = idealSum;
     this.idealProduct = idealProduct;
   }
-  fitness(chromosome: string) {
+
+  fitness(chromosome: string, thisObject: GeneticAlgorithm) {
+    const numberArr: number[] = thisObject.numberArr;
     let chromosomeSum: number = 0;
-    let chromosomeProduct: number = 0;
+    let chromosomeProduct: number = 1;
     for (let i = 0; i < chromosome.length; i++) {
       const digit: string = chromosome[i];
       if (digit === "0") {
-        chromosomeSum += this.numberArr[i];
+        chromosomeSum += numberArr[i];
       } else if (digit === "1") {
-        chromosomeProduct *= this.numberArr[i];
+        chromosomeProduct *= numberArr[i];
       }
     }
-    return Math.sqrt(
-      Math.pow(chromosomeSum - this.idealSum, 2) +
-        Math.pow(chromosomeProduct - this.idealProduct, 2),
-    );
+    //console.log(chromosome, chromosomeSum, chromosomeProduct)
+    const sumOfSquares: number =
+      Math.pow(chromosomeSum - thisObject.idealSum, 2) +
+      Math.pow(chromosomeProduct - thisObject.idealProduct, 2);
+    return 1 / (1 + Math.sqrt(sumOfSquares));
   }
+
   generate(length: number) {
     const possibilities: string[] = ["0", "1"];
     const population: string[] = [];
@@ -85,16 +93,12 @@ export class GeneticAlgorithm {
     return [first, second];
   }
 
-  run(
-    fitness: (chromosome: string) => number,
-    length: number,
-    p_c: number,
-    p_m: number,
-    iterations = 100,
-  ) {
-    let population: string[] = this.generate(length);
+  run(p_c: number, p_m: number, iterations: number = 100) {
+    let population: string[] = this.generate(this.numberArr.length);
     for (let i = 0; i < iterations; i++) {
-      const fitnesses: number[] = population.map(fitness);
+      const fitnesses: number[] = population.map((chromosome) =>
+        this.fitness(chromosome, this),
+      );
       let newPopulation: string[] = [];
       while (newPopulation.length < population.length) {
         let [chromosome1, chromosome2]: string[] = [
@@ -115,7 +119,7 @@ export class GeneticAlgorithm {
     let maxFitness: number = 0;
     let fittestChromosome: string = population[0];
     for (const chromosome of population) {
-      const currentFitness: number = fitness(chromosome);
+      const currentFitness: number = this.fitness(chromosome, this);
       if (currentFitness > maxFitness) {
         maxFitness = currentFitness;
         fittestChromosome = chromosome;
